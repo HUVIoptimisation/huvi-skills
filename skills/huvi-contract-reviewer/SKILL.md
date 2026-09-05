@@ -217,7 +217,7 @@ Contrat :
 
 | Version | Date | Notes |
 |---|---|---|
-| v1.0.0 | 2026-09-04 | Publication publique : test d'autonomie concluant (agent externe sans contexte → rapport conforme, trouvailles indépendantes), repo GitHub HUVIoptimisation/huvi-contract-reviewer. |
+| v1.0.0 | 2026-09-04 | Publication publique dans la librairie HUVIoptimisation/huvi-skills (skills/huvi-contract-reviewer/) : test d'autonomie concluant (agent externe sans contexte → rapport conforme, trouvailles indépendantes). |
 | v0.1.2 | 2026-09-04 | Test réel (2 contrats) : complétude du document + documents référencés (annexes/CGV/URL) en étape 1, verdict annoncé en tête du rapport, piège extraction PDF dégradée, cas d'usage « audit de son propre template ». |
 | v0.1.1 | 2026-09-04 | Détection de la loi applicable (défaut Québec sur indices, bascule FR explicite, jamais de mélange), modes rapide/complet matérialisés, sources vivantes en ligne, prompt d'exemple reformulé. |
 | v0.1.0 | 2026-09-04 | Ébauche initiale : workflow 12 étapes, registres épistémiques, gabarit de sortie, drapeaux QC vérifiés (Légis Québec). |
