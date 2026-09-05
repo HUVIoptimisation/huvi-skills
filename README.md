@@ -11,6 +11,7 @@ encapsulates a repeatable, well-tested workflow an AI agent can run for your bus
 | Skill | What it does |
 |---|---|
 | [huvi-business-architecture-optimizer](skills/huvi-business-architecture-optimizer/) | Audits a business's processes, finds shallow ones, proposes deepening redesigns as a visual HTML report, then grills through the top candidates with the owner. |
+| [huvi-contract-reviewer](skills/huvi-contract-reviewer/) | Reviews contracts before you sign, in plain French: completeness, obligations, costs, exit, IP & data, liability, asymmetry between parties, negotiation priorities with ready-to-send clauses, and a clear verdict. |
 
 ## Install
 
@@ -18,12 +19,18 @@ Copy the skill folder into your agent's skills directory, e.g. for Hermes:
 
 ```bash
 cp -r skills/huvi-business-architecture-optimizer ~/.hermes/skills/
+cp -r skills/huvi-contract-reviewer ~/.hermes/skills/
 ```
 
 Then ask your agent to run it — for example:
 
 > My renovation business is losing leads between texts and calls, and I spend my evenings
 > doing quotes. Audit my processes and tell me what to redesign.
+
+Or, to review a contract before signing:
+
+> Analyse ce contrat de façon complète, de mon point de vue en tant que client. Réponds en
+> français simple, orienté conséquences pratiques. Voici le contrat : [...]
 
 ## Philosophy
 
