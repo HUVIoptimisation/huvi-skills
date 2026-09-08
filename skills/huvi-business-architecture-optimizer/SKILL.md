@@ -2,7 +2,7 @@
 name: huvi-business-architecture-optimizer
 description: Audit a business's processes for deepening opportunities.
 disable-model-invocation: true
-version: 1.0.0
+version: 1.1.0
 author: HUVI Optimisation
 license: MIT
 platforms: [linux, macos, windows]
@@ -16,7 +16,7 @@ metadata:
 
 ## What This Skill Does
 
-Scans a small business's operations, surfaces architectural friction, and proposes **deepening opportunities**: redesigns that turn shallow processes into deep ones. Produces a visual HTML report of candidates, then walks the owner through whichever one they pick. The aim is leverage for the owner, locality for the team, and verifiability through the process interface.
+Scans a small business's operations, surfaces architectural friction, and proposes **deepening opportunities**: redesigns that turn shallow processes into deep ones. Produces a structured visual HTML report — an overall verdict, a summary table, and **one detailed fiche per candidate process** — then walks the owner through whichever one they pick. The aim is leverage for the owner, locality for the team, and verifiability through the process interface.
 
 ## When to Use It
 
@@ -45,6 +45,25 @@ Use these terms exactly in every suggestion. Don't drift into "department", "too
 - **One adapter means a hypothetical seam. Two adapters means a real one.** Don't introduce a tool/automation at a seam unless something actually varies across it.
 - **The business's own language names the seams.** Use the owner's vocabulary (their leads, their deals, their projects) — never generic labels.
 
+**Epistemic registers — always distinguish, in every fiche and every sentence that asserts:**
+- **FACT** — what the business demonstrably does: observed, counted, documented.
+- **INFERENCE** — the reasonable reading of something ambiguous or unverified, and why it is a reading, not a fact.
+- **RECOMMENDATION / RISK** — what the owner should verify, redesign, or reject.
+
+Never invent a process step, a volume, or a number. If the business has no trace of something, say so: an absence is not a process, it is a risk (the work happens in someone's head, in texts, in a spreadsheet no one updates).
+
+## Modes
+
+Two modes, decided at step 0 and announced in the report header:
+
+| | **QUICK** | **FULL** |
+|---|---|---|
+| **When** | Small business, one clear pain point, owner wants a direction fast | Business with several flows, scattered tools, or the owner wants the complete picture |
+| **Fiche depth** | Verdict + essentials, deletion test, top 3 frictions, redesign priorities | Every fiche section below, fully |
+| **Candidates** | 2-4, focused on the named pain | Up to the scope revealed by the interview |
+
+Rule: when in doubt → FULL. The owner can force a mode by saying so.
+
 ## Process
 
 ### 0. Interview the owner first (business analysis)
@@ -59,7 +78,7 @@ Before exploring anything, run a deep interview. Ask real questions, one topic a
 - **Past decisions**: what was tried and rejected (tools, processes, hires) and why — never re-suggest these
 - **Goals**: why now, where they want the business to be in 6-12 months, what "freedom" looks like
 
-The interview drives the scope: you only explore what is relevant to what hurts. If the owner names a direction, take it. Otherwise, the interview itself reveals the hot spots.
+The interview drives the scope: you only explore what is relevant to what hurts. If the owner names a direction, take it. Otherwise, the interview itself reveals the hot spots. Record the mode (quick/full) you will run.
 
 ### 1. Explore
 
@@ -80,26 +99,63 @@ Then walk the business's processes. Don't follow rigid heuristics; explore organ
 
 Apply the **deletion test** to anything you suspect is shallow: would removing it concentrate complexity, or just move it? A "yes, concentrates" is the signal you want.
 
-### 2. Present candidates as an HTML report
+### 2. Present the report
 
 Write a self-contained HTML file to the OS temp directory so nothing lands in the business's repo. Resolve the temp dir from `$TMPDIR`, falling back to `/tmp` (or `%TEMP%` on Windows), and write to `<tmpdir>/business-architecture-review-<timestamp>.html` so each run gets a fresh file. Open it for the user (`xdg-open <path>` on Linux, `open <path>` on macOS, `start <path>` on Windows) and tell them the absolute path.
 
-The report uses **Tailwind via CDN** for layout and styling, and **Mermaid via CDN** for diagrams where a graph/flow/sequence reliably communicates the structure. Mix Mermaid with hand-crafted CSS/SVG visuals: use Mermaid when relationships are graph-shaped (process flows, dependencies, sequences), and hand-built divs/SVG when you want something more editorial (mass diagrams, cross-sections, collapse animations). Each candidate gets a **before/after visualisation**. Be visual.
+The report uses **Tailwind via CDN** for layout and styling, and **Mermaid via CDN** for diagrams where a graph/flow/sequence reliably communicates the structure. Mix Mermaid with hand-crafted CSS/SVG visuals: use Mermaid when relationships are graph-shaped (process flows, dependencies, sequences), and hand-built divs/SVG when you want something more editorial (mass diagrams, cross-sections, collapse animations). Each fiche gets a **before/after visualisation**. Be visual.
 
-For each candidate, render a card with:
+**Report structure (follow it exactly):**
 
-- **Processes & tools**: which processes are involved, which tools/people sit at the seams
-- **Problem**: why the current architecture is causing friction (in the owner's words)
-- **Solution**: plain language description of what would change
-- **Benefits**: explained in terms of leverage and locality, and how verifiability would improve (what KPI you could now see)
-- **Before / After diagram**: side-by-side, custom-drawn, illustrating the shallowness and the deepening
-- **Recommendation strength**: one of `Strong`, `Worth exploring`, `Speculative`, rendered as a badge
+```
+# Business Architecture Review — [Business name]
+Owner: [role] · Mode: quick/full · Date: [date]
+## 0. Overall verdict — decision first, 5 lines max
+## 1. Summary table of process fiches
+   | Process | Verdict | Depth | Owner cost | Priority |
+## 2. Detail fiches — one per candidate process (Fiche Structure below)
+## 3. Top recommendation — which process first and why
+```
 
-End the report with a **Top recommendation** section: which candidate you'd tackle first and why.
+**Fiche Structure (one per candidate process):**
 
-**Use the business's vocabulary for the domain, and the deep-process vocabulary for the architecture.** If the owner talks about "deals," talk about "the deal intake process," not "the CRM thing."
+```
+## Fiche — [Process name, in the owner's words]
+### 1. Verdict and essentials — decision first, 5 lines max
+   Verdict badge + the top points to settle, in plain language.
+### 2. What actually happens (FACT / INFERENCE / RECOMMENDATION)
+### 3. Depth — interface vs complexity
+   Small table: normed input? logic encapsulated? structured output?
+   exceptions handled? single source of truth? → shallow or deep.
+### 4. Deletion test
+   Deleted, where does the complexity go? Vanish, or scatter across
+   people/tools/heads? Verdict: deep (protect) or shallow (redesign).
+### 5. Frictions and risks
+   Table: friction | concrete impact | level (LOW/MEDIUM/HIGH) | what to do.
+### 6. Current costs
+   Time per week, money, cognitive load (owner's evenings).
+### 7. Value vs effort
+   Table showing where value is delivered vs where effort is spent —
+   the asymmetry is the opportunity.
+### 8. Redesign — 3 priorities maximum, ranked
+   MUST CHANGE / SHOULD CHANGE / NICE TO HAVE. For each: why it
+   matters, the outcome to aim for, a fallback. Automation only ever
+   appears here as the LAST step of a priority — after the process is deep.
+### 9. Missing information before deciding
+   What would change the verdict, and how to get it (count for 2 weeks,
+   check the log, ask the team).
+```
 
-**Decision conflicts**: if a candidate contradicts a decision the owner already made, only surface it when the friction is real enough to warrant revisiting. Mark it clearly in the card (e.g. a warning callout: _"contradicts the decision to keep X, but worth reopening because…"_). Don't list every theoretical redesign a past decision forbids.
+**Verdict badges** (one per fiche, decision first):
+
+- 🟢 **DEEP** — the process concentrates complexity behind a small interface. Protect it, extend it, document it. No redesign needed.
+- 🟡 **SHALLOW** — the interface is as complex as the implementation; the process moves work around instead of absorbing it. Redesign before automating.
+- 🔴 **FRAGILE** — shallow AND acting up: silent failures, dependence on one person, unmanaged exceptions. Intervene soon.
+- ⚫ **REMOVE** — negative ROI (maintenance and attention cost more than the value), or a duplicate of another process. Delete or merge.
+
+Each fiche cites the owner's vocabulary and marks the **epistemic registers** (FACT / INFERENCE / RECOMMENDATION) throughout. Every risk is rated. The QUICK mode produces a leaner fiche (verdict + essentials, deletion test, top 3 frictions, priorities) but keeps the header, the verdict, and the registers.
+
+**Vocabulary and decision conflicts:** use the business's vocabulary for the domain, and the deep-process vocabulary for the architecture. If the owner talks about "deals," talk about "the deal intake process," not "the CRM thing." If a candidate contradicts a decision the owner already made, only surface it when the friction is real enough to warrant revisiting. Mark it clearly in the fiche (e.g. a warning callout: _"contradicts the decision to keep X, but worth reopening because…"_). Don't list every theoretical redesign a past decision forbids.
 
 Do NOT propose tools or automations yet. After the file is written, ask the owner: "Which of these would you like to explore?"
 
@@ -122,13 +178,18 @@ Side effects happen inline as decisions crystallize:
 - Pain points / direction (string): a named process or recurring headache to focus on (optional — otherwise discovered)
 - Business vocabulary / glossary (string): the owner's terms for leads, deals, projects, change orders (optional)
 - Past decisions (string): what was tried and rejected, so nothing is re-suggested (optional)
+- Mode (string, optional): quick or full — otherwise decided at step 0
 
 ## Expected Outputs
 
-1. An HTML report (`business-architecture-review-<timestamp>.html`) with one card per candidate:
-   - Processes & tools · Problem · Solution · Benefits · Before/After diagram · Recommendation strength (`Strong` / `Worth exploring` / `Speculative`)
-2. A **Top recommendation** section (which candidate first and why).
-3. After the grilling loop: a documented decision set (what stays, what changes, what gets recorded) and an updated business glossary.
+1. An HTML report (`business-architecture-review-<timestamp>.html`) following the report structure above:
+   - Overall verdict (decision first)
+   - Summary table of process fiches (process | verdict | depth | owner cost | priority)
+   - One **fiche per candidate process** with: verdict badge 🟢🟡🔴⚫ · essentials · what actually happens (FACT/INFERENCE/RECOMMENDATION) · depth table · deletion test · frictions rated · current costs · value vs effort · 3 redesign priorities ranked · missing information
+   - Before/After visualisation per fiche
+   - **Top recommendation** section (which process first and why)
+2. After the grilling loop: a documented decision set (what stays, what changes, what gets recorded) and an updated business glossary.
+3. Every assertion tagged FACT / INFERENCE / RECOMMENDATION — nothing invented, absences called out as risks.
 
 ## Example Prompt Pattern
 
@@ -152,19 +213,24 @@ Audit my processes and tell me what to redesign.
 - **Never propose a tool or an automation before the process is deep** — the golden rule ("you never automate chaos") is non-negotiable. The grilling loop ends with automation, never the reverse.
 - **Don't invent business vocabulary**: use the owner's terms (their leads, their deals, their sites). Generic labels = a report that speaks to no one.
 - **Don't re-suggest a decision already made**: check the decision record before proposing. Only reopen a file if the friction is real and documented.
-- **A report without concrete before/after is useless**: each candidate must visually show the shallowness (before) and the deepening (after). Labelled boxes are not enough.
+- **A report without concrete before/after is useless**: each fiche must visually show the shallowness (before) and the deepening (after). Labelled boxes are not enough.
 - **Don't get lost in the audit**: YAGNI. Target real friction points, not a theoretical overhaul of the whole business.
+- **Never invent a fact**: no step, volume, or number without a source. No trace of something = state the absence (FACT: no record exists) and flag the risk — don't guess the number.
+- **A fiche without a verdict is a memo**: every candidate process gets a 🟢🟡🔴⚫ badge, decision first. If you can't decide, the "Missing information" section is where the blocker goes, not a wishy-washy verdict.
+- **Don't recommend removing a process the owner depends on daily** without showing what absorbs the complexity (deletion test, section 4 of the fiche).
 
 ## Verification
 
-- The HTML report opens and shows each candidate with its 6 fields: processes & tools, problem, solution, benefits (leverage/locality/verifiability), before/after diagram, recommendation strength.
-- Each candidate passes the **deletion test**: "the complexity comes back in one place" = depth signal; "it just moves" = shallow → redesign.
+- The HTML report opens and shows: overall verdict, summary table, one fiche per candidate with all its sections (verdict badge, registers, depth, deletion test, rated frictions, costs, value vs effort, 3 priorities, missing info), before/after visualisation, and a top recommendation.
+- Each fiche passes the **deletion test**: "the complexity comes back in one place" = depth signal; "it just moves" = shallow → redesign.
+- Every assertion in every fiche is tagged FACT / INFERENCE / RECOMMENDATION. Absences are stated as absences, never filled in.
 - The vocabulary used is the owner's (no invented generic terms).
 - No tool or automation recommendation is emitted before the end of the grilling loop.
-- The report ends with a **Top recommendation** and a justification (why this candidate first).
+- The report ends with a **Top recommendation** and a justification (why this process first).
 
 ## Revision History
 
 | Version | Date | Notes |
 |---|---|---|
 | v1.0.0 | 2026-09-01 | Initial public release (HUVI Optimisation) |
+| v1.1.0 | 2026-09-05 | Bonification of the output format: per-process fiches with verdict badges (🟢 DEEP / 🟡 SHALLOW / 🔴 FRAGILE / ⚫ REMOVE), epistemic registers (FACT/INFERENCE/RECOMMENDATION) throughout, formal fiche structure (depth table, deletion test section, rated frictions, costs, value vs effort, 3 ranked redesign priorities, missing information), QUICK/FULL modes, overall verdict + summary table in the report header. Scope unchanged: business processes before automation. |
